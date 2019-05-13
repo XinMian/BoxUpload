@@ -1,0 +1,11 @@
+﻿@model UploadFileViewModel;
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Upload File to Box.com</h1>
+    <form asp-controller="Home" asp-action="UplodaFile" method="post">
+        <input type="submit" class="btn-success" value="Upload">
+    </form>
+</div>
