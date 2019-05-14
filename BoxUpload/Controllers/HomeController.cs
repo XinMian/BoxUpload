@@ -12,6 +12,11 @@ using Box.V2.Models;
 using System.IO;
 using System.Collections.Specialized;
 using System.Web;
+using ApplicationCore.Repository;
+using Infrastructure.Repository;
+using ApplicationCore.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace BoxUpload.Controllers
 {
@@ -20,8 +25,10 @@ namespace BoxUpload.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            Box box = new Box();
-            box.JwtAuthen();
+            List<FileUpload> fileUploads = fileUploadRepository.Gets();
+
+            Box box = new Box(fileUploadRepository);
+            box.JwtAuthen(fileUploads);
 
             UploadFileViewModel model = new UploadFileViewModel();
             return View(model);
@@ -37,5 +44,15 @@ namespace BoxUpload.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        #region Dependency
+        private readonly IFileUploadRepository fileUploadRepository;
+        public HomeController(IFileUploadRepository fileUploadRepository)
+        {
+            this.fileUploadRepository = fileUploadRepository;
+        }
+        #endregion Dependency
     }
+
+
 }

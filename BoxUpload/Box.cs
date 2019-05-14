@@ -1,4 +1,6 @@
-﻿using Box.V2;
+﻿using ApplicationCore.Entities;
+using ApplicationCore.Repository;
+using Box.V2;
 using Box.V2.Auth;
 using Box.V2.Config;
 using Box.V2.JWTAuth;
@@ -15,13 +17,14 @@ namespace BoxUpload
     public class Box
     {
         public OAuthSession BoxAuthenicatedSession { get; set; }
+        public IFileUploadRepository fileUploadRepository { get; set; }
 
-        public Box()
+        public Box(IFileUploadRepository fileUploadRepository)
         {
-
+            this.fileUploadRepository = fileUploadRepository;
         }
 
-        public async void JwtAuthen()
+        public async void JwtAuthen(List<FileUpload> fileUploads)
         {
             // Read in config file
             IBoxConfig config = null;
@@ -33,80 +36,35 @@ namespace BoxUpload
             // Create JWT auth using config file
             var boxJWT = new BoxJWTAuth(config);
 
-
             // Create admin client
             var adminToken = boxJWT.AdminToken();
             var client = boxJWT.AdminClient(adminToken);
 
-            // Set upload values
-            List<MyFile> myFiles = new List<MyFile>();
-
-            for (int i=1; i<=10; i++)
-            {
-                MyFile myFile = new MyFile();
-                myFile.path = "D:\\CRM" + i + ".pdf";
-                myFile.name = "CRM" + Guid.NewGuid().ToString("N") + i + ".pdf";
-
-                myFiles.Add(myFile);
-            }
-           
-            var folderId = "76164273241";
-
-
-            foreach(var item in myFiles)
+            foreach(var item in fileUploads)
             {
                 try
                 {
-                    string fileId = "";
                     BoxFile newFile;
-                    using (FileStream stream = new FileStream(item.path, FileMode.Open))
+                    using (FileStream stream = new FileStream(item.SPath, FileMode.Open))
                     {
                         BoxFileRequest req = new BoxFileRequest()
                         {
-                            Name = item.name,
-                            Parent = new BoxRequestEntity() { Id = folderId }
+                            Name = item.DName,
+                            Parent = new BoxRequestEntity() { Id = item.DFolderId }
                         };
 
                         newFile = await client.FilesManager.UploadAsync(req, stream);
                         Console.Out.Write("File ID : " + newFile.Id);
-                        fileId = newFile.Id;
-                    }
-
-                    if(string.IsNullOrEmpty(fileId))
-                    {
-                        continue;
+                        item.DFileId = newFile.Id;
                     }
                 }
                 catch(Exception e)
                 {
-                    Console.Out.Write("Error : " + e.Message);
+                    item.ErrorLog = e.Message;
                 }
-                //Stream fileContents = await client.FilesManager.DownloadStreamAsync(id: "455392071332");
-            }
-            // Upload file
-        }
 
-        private async void UploadFile(string path, string name, string folderId, BoxClient client)
-        {
-            string fileId = "";
-            BoxFile newFile;
-            using (FileStream stream = new FileStream(path, FileMode.Open))
-            {
-                BoxFileRequest req = new BoxFileRequest()
-                {
-                    Name = name,
-                    Parent = new BoxRequestEntity() { Id = folderId }
-                };
-
-                newFile = await client.FilesManager.UploadAsync(req, stream);
-                Console.Out.Write("File ID : " + newFile.Id);
-                fileId = newFile.Id;
+                fileUploadRepository.Update(item);
             }
-        }
-        public class MyFile
-        {
-            public string name { get; set; }
-            public string path { get; set; }
         }
     }
 }
