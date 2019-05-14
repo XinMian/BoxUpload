@@ -1,24 +1,29 @@
-﻿
-using ApplicationCore.Helper;
+﻿using ApplicationCore.Helper;
 using Infrastructure.Repository;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.IO;
 
 namespace Console
 {
     class Program
     {
-        public static IConfigurationRoot Configuration;
+        private static readonly IConfigurationRoot configuration = (new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)).Build();
         static void Main(string[] args)
         {
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var mySettingsConfig = new MySettingsConfig();
+            configuration.GetSection("MySettings").Bind(mySettingsConfig);
+
             // Db Context
-            var connectionString = "Server=localhost;Database=Box;user id=sa;password=P@ssw0rd";
             var option = new DbContextOptionBuilder(connectionString);
 
             FileUploadRepository fileUploadRepository = new FileUploadRepository(option);
-            var xx = fileUploadRepository.Gets();
+            var fileUploads = fileUploadRepository.Gets();
 
+            foreach(var item in fileUploads)
+            {
+                System.Console.WriteLine("File Name : " + item.SPath);
+            }
 
             System.Console.WriteLine("Hello World!");
             System.Console.ReadLine();
