@@ -32,7 +32,6 @@ namespace Infrastructure.Repository
             {
                 return db.FileUpload.FirstOrDefault(x => x.Id == id);
             }
-
         }
 
         public void Update(FileUpload item)
@@ -43,6 +42,24 @@ namespace Infrastructure.Repository
                 model.DFileId = item.DFileId;
                 model.ErrorLog = item.ErrorLog;
 
+                db.SaveChanges();
+            }
+        }
+
+        public void Insert(FileUpload item)
+        {
+            using (var db = new BoxContext(option))
+            {
+                db.FileUpload.Add(item);
+                db.SaveChanges();
+            }
+        }
+
+        public void Inserts(List<FileUpload> items)
+        {
+            using (var db = new BoxContext(option))
+            {
+                db.FileUpload.AddRange(items);
                 db.SaveChanges();
             }
         }
