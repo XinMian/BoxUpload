@@ -3,6 +3,7 @@ using ApplicationCore.Helper;
 using ApplicationCore.Service;
 using Infrastructure.Repository;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Console
@@ -20,14 +21,20 @@ namespace Console
             string sourceFolder = mySettingsConfig.SourceFolder;
             string errorFolder = mySettingsConfig.ErrorFolder;
 
+            MyFile myFile = new MyFile();
 
-            var files = MyFile.GetFiles(mySettingsConfig.SourceFolder);
+            var files = myFile.GetFiles(mySettingsConfig.SourceFolder);
+            List<FileUpload> fileUploads = myFile.ToFileUpload(files, mySettingsConfig.DestinationFolderId);
 
             // Db Context
             var option = new DbContextOptionBuilder(connectionString);
             FileUploadRepository fileUploadRepository = new FileUploadRepository(option);
-            var fileUploads = fileUploadRepository.Gets();
+            fileUploadRepository.Inserts(fileUploads);
 
+            //List<FileUpload> fileUploads = fileUploadRepository.Gets();
+
+            //Box box = new Box(fileUploadRepository);
+            //box.JwtAuthen(fileUploads);
 
             System.Console.ReadLine();
         }

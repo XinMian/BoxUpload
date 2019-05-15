@@ -1,22 +1,16 @@
 ﻿using ApplicationCore.Entities;
 using ApplicationCore.Repository;
-using Box.V2;
-using Box.V2.Auth;
 using Box.V2.Config;
 using Box.V2.JWTAuth;
 using Box.V2.Models;
-using BoxUpload.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BoxUpload
 {
     public class Box
     {
-        public OAuthSession BoxAuthenicatedSession { get; set; }
         public IFileUploadRepository fileUploadRepository { get; set; }
 
         public Box(IFileUploadRepository fileUploadRepository)
