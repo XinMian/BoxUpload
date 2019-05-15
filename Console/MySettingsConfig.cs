@@ -8,7 +8,7 @@ namespace Console
     {
         public string SourceFolder { get; set; }
         public string ErrorFolder { get; set; }
-
+        public string SuccessFolder { get; set; }
         public string DestinationFolderId { get; set; }
     }
 }

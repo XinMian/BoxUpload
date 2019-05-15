@@ -38,8 +38,9 @@ namespace ApplicationCore.Service
         {
             try
             {
-                File.Move(sPath, sPath); // Try to move
-                Console.WriteLine("Moved"); // Success
+                File.Copy(sPath, dPath);
+                File.Delete(sPath);
+                Console.WriteLine("Moved Success"); // Success
             }
             catch (IOException ex)
             {

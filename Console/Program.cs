@@ -13,6 +13,8 @@ namespace Console
         private static readonly IConfigurationRoot configuration = (new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)).Build();
         static void Main(string[] args)
         {
+            MyFile myFile = new MyFile();
+
             //Get Config
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             var mySettingsConfig = new MySettingsConfig();
@@ -20,8 +22,9 @@ namespace Console
 
             string sourceFolder = mySettingsConfig.SourceFolder;
             string errorFolder = mySettingsConfig.ErrorFolder;
+            string successFolder = mySettingsConfig.SuccessFolder;
 
-            MyFile myFile = new MyFile();
+            
 
             var files = myFile.GetFiles(mySettingsConfig.SourceFolder);
             List<FileUpload> fileUploads = myFile.ToFileUpload(files, mySettingsConfig.DestinationFolderId);
@@ -33,8 +36,8 @@ namespace Console
 
             //List<FileUpload> fileUploads = fileUploadRepository.Gets();
 
-            //Box box = new Box(fileUploadRepository);
-            //box.JwtAuthen(fileUploads);
+            MyBox box = new MyBox(fileUploadRepository);
+            box.JwtAuthen(fileUploads, successFolder, errorFolder);
 
             System.Console.ReadLine();
         }
