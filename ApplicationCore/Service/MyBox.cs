@@ -1,5 +1,7 @@
 ﻿using ApplicationCore.Entities;
 using ApplicationCore.Repository;
+using Box.V2;
+using Box.V2.Auth;
 using Box.V2.Config;
 using Box.V2.JWTAuth;
 using Box.V2.Models;
@@ -18,7 +20,7 @@ namespace ApplicationCore.Service
             this.fileUploadRepository = fileUploadRepository;
         }
 
-        public async void JwtAuthen(List<FileUpload> fileUploads, string successPath, string errorPath)
+        public BoxClient JwtAuthen()
         {
             // Read in config file
             IBoxConfig config = null;
@@ -34,6 +36,12 @@ namespace ApplicationCore.Service
             var adminToken = boxJWT.AdminToken();
             var client = boxJWT.AdminClient(adminToken);
 
+            return client;
+
+        }
+
+        public async void UploadFileToBox(BoxClient client, List<FileUpload> fileUploads, string successPath, string errorPath)
+        {
             MyFile myFile = new MyFile();
             foreach (var item in fileUploads)
             {
@@ -50,7 +58,7 @@ namespace ApplicationCore.Service
 
                         newFile = await client.FilesManager.UploadAsync(req, stream);
                         Console.Out.WriteLine("Upload Success File ID : " + newFile.Id);
-                        item.DFileId = newFile.Id;     
+                        item.DFileId = newFile.Id;
                     }
                     myFile.MoveFile(item.SPath, successPath + item.DName);
                 }

@@ -1,6 +1,7 @@
 ﻿using ApplicationCore.Entities;
 using ApplicationCore.Helper;
 using ApplicationCore.Service;
+using Box.V2;
 using Infrastructure.Repository;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
@@ -13,19 +14,12 @@ namespace Console
         private static readonly IConfigurationRoot configuration = (new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)).Build();
         static void Main(string[] args)
         {
-            MyFile myFile = new MyFile();
-
             //Get Config
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             var mySettingsConfig = new MySettingsConfig();
             configuration.GetSection("MySettings").Bind(mySettingsConfig);
 
-            string sourceFolder = mySettingsConfig.SourceFolder;
-            string errorFolder = mySettingsConfig.ErrorFolder;
-            string successFolder = mySettingsConfig.SuccessFolder;
-
-            
-
+            MyFile myFile = new MyFile();
             var files = myFile.GetFiles(mySettingsConfig.SourceFolder);
             List<FileUpload> fileUploads = myFile.ToFileUpload(files, mySettingsConfig.DestinationFolderId);
 
@@ -34,10 +28,11 @@ namespace Console
             FileUploadRepository fileUploadRepository = new FileUploadRepository(option);
             fileUploadRepository.Inserts(fileUploads);
 
-            //List<FileUpload> fileUploads = fileUploadRepository.Gets();
+            List<FileUpload> fileForUploads = fileUploadRepository.GetForUploads();
 
             MyBox box = new MyBox(fileUploadRepository);
-            box.JwtAuthen(fileUploads, successFolder, errorFolder);
+            BoxClient client = box.JwtAuthen();
+            box.UploadFileToBox(client, fileForUploads, mySettingsConfig.SuccessFolder, mySettingsConfig.ErrorFolder);
 
             System.Console.ReadLine();
         }

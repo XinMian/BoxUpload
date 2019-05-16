@@ -17,6 +17,7 @@ using Infrastructure.Repository;
 using ApplicationCore.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using ApplicationCore.Service;
 
 namespace BoxUpload.Controllers
 {

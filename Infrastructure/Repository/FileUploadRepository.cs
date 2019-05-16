@@ -26,6 +26,17 @@ namespace Infrastructure.Repository
             
         }
 
+        public List<FileUpload> GetForUploads()
+        {
+            using (var db = new BoxContext(option))
+            {
+                return db.FileUpload
+                    .Where(x => string.IsNullOrEmpty(x.DFileId) && string.IsNullOrEmpty(x.ErrorLog))
+                    .ToList();
+            }
+
+        }
+
         public FileUpload Get(int id)
         {
             using (var db = new BoxContext(option))

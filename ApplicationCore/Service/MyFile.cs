@@ -38,7 +38,7 @@ namespace ApplicationCore.Service
         {
             try
             {
-                File.Copy(sPath, dPath);
+                File.Copy(sPath, dPath, true);
                 File.Delete(sPath);
                 Console.WriteLine("Moved Success"); // Success
             }
