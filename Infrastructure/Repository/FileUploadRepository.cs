@@ -74,5 +74,12 @@ namespace Infrastructure.Repository
                 db.SaveChanges();
             }
         }
+
+        public int CountUnProcess()
+        {
+            int count = GetForUploads().Count;
+
+            return count;
+        }
     }
 }

@@ -33,7 +33,13 @@ namespace Console
             BoxClient client = box.JwtAuthen();
             box.UploadFileToBox(client, fileForUploads, config.SuccessFolder, config.ErrorFolder);
 
-            System.Console.ReadLine();
+
+            int count = 99;
+            while(count > 0)
+            {
+                System.Threading.Thread.Sleep(1000);
+                count = fileUploadRepository.CountUnProcess();
+            }
         }
     }
 }
