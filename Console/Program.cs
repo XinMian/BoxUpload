@@ -11,28 +11,27 @@ namespace Console
 {
     class Program
     {
-        private static readonly IConfigurationRoot configuration = Config.getConfig("appsettings.json");
+        private static readonly IConfigurationRoot configuration = Config.GetConfiguration("appsettings.json");
+        private static MyFile myFile = new MyFile();
+
         static void Main(string[] args)
         {
             //Get Config
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            var mySettingsConfig = new MySettingsConfig();
-            configuration.GetSection("MySettings").Bind(mySettingsConfig);
+            var config = Config.GetConfig(configuration);
 
-            MyFile myFile = new MyFile();
-            var files = myFile.GetFiles(mySettingsConfig.SourceFolder);
-            List<FileUpload> fileUploads = myFile.ToFileUpload(files, mySettingsConfig.DestinationFolderId);
+            //Get File From Folder
+            List<FileUpload> files = myFile.GetFiles(config.SourceFolder, config.DestinationFolderId);
 
             // Db Context
             var option = new DbContextOptionBuilder(connectionString);
             FileUploadRepository fileUploadRepository = new FileUploadRepository(option);
-            fileUploadRepository.Inserts(fileUploads);
+            fileUploadRepository.Inserts(files);
 
             List<FileUpload> fileForUploads = fileUploadRepository.GetForUploads();
-
             MyBox box = new MyBox(fileUploadRepository);
             BoxClient client = box.JwtAuthen();
-            box.UploadFileToBox(client, fileForUploads, mySettingsConfig.SuccessFolder, mySettingsConfig.ErrorFolder);
+            box.UploadFileToBox(client, fileForUploads, config.SuccessFolder, config.ErrorFolder);
 
             System.Console.ReadLine();
         }

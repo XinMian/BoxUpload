@@ -9,15 +9,15 @@ namespace ApplicationCore.Service
 {
     public class MyFile
     {
-        public FileInfo[] GetFiles(string sourceFolder)
+        public List<FileUpload> GetFiles(string sourceFolder, string dFolderId)
         {
             DirectoryInfo d = new DirectoryInfo(sourceFolder);//Assuming Test is your Folder
             FileInfo[] files = d.GetFiles("*.*"); //Getting Text files
 
-            return files;
+            return ToFileUpload(files, dFolderId);
         }
 
-        public List<FileUpload> ToFileUpload(FileInfo[] files, string dFolderId)
+        private List<FileUpload> ToFileUpload(FileInfo[] files, string dFolderId)
         {
             List<FileUpload> models = new List<FileUpload>();
 

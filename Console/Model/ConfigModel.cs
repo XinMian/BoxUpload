@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Console
 {
-    public class MySettingsConfig
+    public class ConfigModel
     {
         public string SourceFolder { get; set; }
         public string ErrorFolder { get; set; }
