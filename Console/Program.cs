@@ -11,7 +11,7 @@ namespace Console
 {
     class Program
     {
-        private static readonly IConfigurationRoot configuration = (new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)).Build();
+        private static readonly IConfigurationRoot configuration = Config.getConfig("appsettings.json");
         static void Main(string[] args)
         {
             //Get Config
