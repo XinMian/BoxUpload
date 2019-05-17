@@ -20,11 +20,16 @@ namespace ApplicationCore.Service
             this.fileUploadRepository = fileUploadRepository;
         }
 
+        public MyBox()
+        {
+        }
+
         public BoxClient JwtAuthen()
         {
             // Read in config file
             IBoxConfig config = null;
-            using (FileStream fs = new FileStream($"D:\\iconextJWTconfig.json", FileMode.Open))
+            string jwtConfigPath = Directory.GetCurrentDirectory() + "\\JwtConfig.json";
+            using (FileStream fs = new FileStream(jwtConfigPath, FileMode.Open))//JwtConfig.json
             {
                 config = BoxConfig.CreateFromJsonFile(fs);
             }
@@ -68,7 +73,7 @@ namespace ApplicationCore.Service
                     myFile.MoveFile(item.SPath, errorPath + item.DName);
                 }
 
-                fileUploadRepository.Update(item);
+                //fileUploadRepository.Update(item);
             }
         }
     }

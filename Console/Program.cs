@@ -16,29 +16,31 @@ namespace Console
 
         static void Main(string[] args)
         {
+            System.Console.WriteLine("Current Directory : " + Directory.GetCurrentDirectory());
             //Get Config
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             var config = Config.GetConfig(configuration);
 
             //Get File From Folder
             List<FileUpload> files = myFile.GetFiles(config.SourceFolder, config.DestinationFolderId);
+            FileUploadService fileService = new FileUploadService(files);
 
             // Db Context
-            var option = new DbContextOptionBuilder(connectionString);
-            FileUploadRepository fileUploadRepository = new FileUploadRepository(option);
-            fileUploadRepository.Inserts(files);
+            //var option = new DbContextOptionBuilder(connectionString);
+            //FileUploadRepository fileUploadRepository = new FileUploadRepository(option);
+            //fileUploadRepository.Inserts(files);
 
-            List<FileUpload> fileForUploads = fileUploadRepository.GetForUploads();
-            MyBox box = new MyBox(fileUploadRepository);
+            //List<FileUpload> fileForUploads = fileUploadRepository.GetForUploads();
+            MyBox box = new MyBox();
             BoxClient client = box.JwtAuthen();
-            box.UploadFileToBox(client, fileForUploads, config.SuccessFolder, config.ErrorFolder);
+            box.UploadFileToBox(client, files, config.SuccessFolder, config.ErrorFolder);
 
 
             int count = 99;
             while(count > 0)
             {
                 System.Threading.Thread.Sleep(1000);
-                count = fileUploadRepository.CountUnProcess();
+                count = fileService.countUnSuccessFile();
             }
         }
     }
