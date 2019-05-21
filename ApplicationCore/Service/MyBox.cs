@@ -5,6 +5,7 @@ using Box.V2.Auth;
 using Box.V2.Config;
 using Box.V2.JWTAuth;
 using Box.V2.Models;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,8 +46,10 @@ namespace ApplicationCore.Service
 
         }
 
-        public async void UploadFileToBox(BoxClient client, List<FileUpload> fileUploads, string successPath, string errorPath)
+        public async void UploadFileToBox(BoxClient client, List<FileUpload> fileUploads, string successPath, string errorPath, string logPath)
         {
+            Log.Logger = new LoggerConfiguration().WriteTo.File(logPath).CreateLogger();
+
             MyFile myFile = new MyFile();
             foreach (var item in fileUploads)
             {
@@ -69,6 +72,7 @@ namespace ApplicationCore.Service
                 }
                 catch (Exception e)
                 {
+                    Log.Error(e.Message);
                     item.ErrorLog = e.Message;
                     myFile.MoveFile(item.SPath, errorPath + item.DName);
                 }

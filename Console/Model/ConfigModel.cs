@@ -10,5 +10,6 @@ namespace Console
         public string ErrorFolder { get; set; }
         public string SuccessFolder { get; set; }
         public string DestinationFolderId { get; set; }
+        public string LogPath { get; set; }
     }
 }

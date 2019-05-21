@@ -4,6 +4,8 @@ using ApplicationCore.Service;
 using Box.V2;
 using Infrastructure.Repository;
 using Microsoft.Extensions.Configuration;
+using Serilog;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -33,7 +35,8 @@ namespace Console
             //List<FileUpload> fileForUploads = fileUploadRepository.GetForUploads();
             MyBox box = new MyBox();
             BoxClient client = box.JwtAuthen();
-            box.UploadFileToBox(client, files, config.SuccessFolder, config.ErrorFolder);
+            string logPath = config.LogPath + "boxLog" + DateTime.Now.ToString("yyyyMMdd") + ".log";
+            box.UploadFileToBox(client, files, config.SuccessFolder, config.ErrorFolder, logPath);
 
 
             int count = 99;
